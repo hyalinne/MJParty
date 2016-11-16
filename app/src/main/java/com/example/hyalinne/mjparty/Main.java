@@ -5,17 +5,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+public class Main extends AppCompatActivity {
     private boolean isLogin;
 
-    public MainActivity() {
+    public Main() {
         isLogin = false;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if(!isLogin) {
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, Login.class);
             startActivity(intent);
         }
         super.onCreate(savedInstanceState);
