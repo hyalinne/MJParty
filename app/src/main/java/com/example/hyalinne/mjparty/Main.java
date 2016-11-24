@@ -28,9 +28,11 @@ public class Main extends AppCompatActivity {
     }
 
     public void findParty(View view) {
+
     }
 
     public void makeParty(View view) {
-
+        Intent makeParty = new Intent(this, Make.class);
+        startActivity(makeParty);
     }
 }
