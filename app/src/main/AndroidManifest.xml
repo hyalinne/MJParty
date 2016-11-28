@@ -21,7 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".Login" />
-        <activity android:name=".Make" />
+        <activity
+            android:name=".Make"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" />
         <activity android:name=".Room" />
     </application>
 
