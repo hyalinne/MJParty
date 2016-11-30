@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class Make extends AppCompatActivity {
+public class MakeRoomActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +16,7 @@ public class Make extends AppCompatActivity {
     }
 
     public void makeParty(View view) {
-        Intent makeRoom = new Intent(this, Room.class);
+        Intent makeRoom = new Intent(this, RoomActivity.class);
         EditText title = (EditText) findViewById(R.id.title);
         EditText subject = (EditText) findViewById(R.id.subject);
         EditText time = (EditText) findViewById(R.id.time);
