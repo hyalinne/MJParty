@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity
 
         // 로그인 확인
         // 로그인 기록이 없으면 로그인 화면을 띄움
-        pref = getPreferences(MODE_PRIVATE);
+        pref = getSharedPreferences("MJParty", MODE_PRIVATE);
         if(!pref.getBoolean("login", false)) {
             login();
         }
@@ -104,8 +104,6 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), "party", Toast.LENGTH_LONG).show();
         } else if (id == R.id.nav_setting) {
             Toast.makeText(getApplicationContext(), "setting", Toast.LENGTH_LONG).show();
-            Intent settingIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingIntent);
         } else if (id == R.id.nav_logout) {
             logout();
             Toast.makeText(getApplicationContext(), "logout", Toast.LENGTH_LONG).show();
@@ -118,7 +116,8 @@ public class MainActivity extends AppCompatActivity
 
 
     public void findParty(View view) {
-
+        String email = pref.getString("email", null);
+        Toast.makeText(getApplicationContext(), "User " + email, Toast.LENGTH_LONG).show();
     }
 
     public void makeParty(View view) {
