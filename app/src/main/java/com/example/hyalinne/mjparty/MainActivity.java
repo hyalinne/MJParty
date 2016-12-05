@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_personal) {
             Toast.makeText(getApplicationContext(), "personal", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, PersonalActivity.class));
         } else if (id == R.id.nav_party) {
             Toast.makeText(getApplicationContext(), "party", Toast.LENGTH_LONG).show();
         } else if (id == R.id.nav_setting) {

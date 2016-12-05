@@ -1,3 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.hyalinne.mjparty.PersonalActivity">
+
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,3 +17,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.hyalinne.mjparty.MapsActivity" />
+
+<EditText
+    android:id="@+id/edit01"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_toLeftOf="@+id/show_btn"
+    android:hint="주소를 입력하세요."
+    android:text=""
+    android:textSize="16dp" />
+
+<Button
+    android:id="@+id/show_btn"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:text="주소 검색"
+    android:textSize="16dp"
+    android:onClick="showAddress"/>
+
+</RelativeLayout>
