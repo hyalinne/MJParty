@@ -3,22 +3,20 @@ package com.example.hyalinne.mjparty;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,6 +29,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +42,6 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-
-    // 테스트 데이터
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -60,6 +53,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    // Preference
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +89,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // form view & 프로그레스 추가가
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        // Preference 세팅
+        pref = getSharedPreferences("MJParty", MODE_PRIVATE);
     }
 
     private void populateAutoComplete() {
@@ -143,6 +142,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
+
+    // 로그인 시도
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -159,14 +160,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         boolean cancel = false;
         View focusView = null;
 
-        // 비밀번호 확인
+        // 비밀번호 valid
         if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
-        // 이메일 확인
+        // 이메일 valid
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
@@ -174,10 +175,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         if (cancel) {
-            // 포커스
+            // 취소 시 포커스
             focusView.requestFocus();
         } else {
-            SharedPreferences pref = getSharedPreferences("MJParty", MODE_PRIVATE);
+            // 이메일 저장
             SharedPreferences.Editor editor = pref.edit();
             editor.putString("email", email);
             editor.commit();
@@ -279,10 +280,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
+
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
@@ -295,25 +293,37 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
+            // 서버 통신
+            httpClient svr = new httpClient();
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                String response = svr.post("http://52.79.82.56/users/logIn", svr.loginData(mEmail, mPassword));
+                if(response.equals("new")) {
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putBoolean("new", true);
+                    editor.commit();
+                    return true;
+                } else if(response.equals("password")) {
+                    return false;
+                } else {
+                    // json 처리
+                    // TODO : json 을 pref 안 거치게 하기!
+                    JSONArray jsonArray = new JSONArray(svr);
+                    JSONObject jsonObject = new JSONObject();
+                    for(int i = 0; i < jsonArray.length(); i++) {
+                        jsonObject= jsonArray.getJSONObject(i);
+                    }
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("name", jsonObject.getString("name"));
+                    editor.putInt("age", jsonObject.getInt("age"));
+                    editor.putString("gender", jsonObject.getString("gender"));
+                    editor.putString("major", jsonObject.getString("major"));
+                    Toast.makeText(getApplicationContext(), "email" + jsonObject.getString("email"), Toast.LENGTH_LONG).show();
+                    return true;
                 }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-
-            // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override

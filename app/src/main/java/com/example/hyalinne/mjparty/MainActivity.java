@@ -29,6 +29,10 @@ public class MainActivity extends AppCompatActivity
             login();
         }
 
+        if(pref.getBoolean("new", true)) {
+            firstSet();
+        }
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -42,6 +46,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    // 회원가입 시 개인정보 입력
+    private void firstSet() {
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("new", false);
+        editor.commit();
     }
 
     // 로그인 함수
