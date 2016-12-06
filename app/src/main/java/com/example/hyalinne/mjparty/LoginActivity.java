@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -33,7 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +92,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Preference 세팅
         pref = getSharedPreferences("MJParty", MODE_PRIVATE);
+    }
+
+    // 회원가입 시 개인정보 입력
+    private void firstSet() {
+        startActivity(new Intent(this, PersonalActivity.class));
     }
 
     private void populateAutoComplete() {
@@ -181,12 +186,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // 이메일 저장
             SharedPreferences.Editor editor = pref.edit();
             editor.putString("email", email);
+            editor.putString("passwd", password);
             editor.commit();
             Toast.makeText(getApplicationContext(), "User " + email, Toast.LENGTH_LONG).show();
             // 프로그레스
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
+            if(pref.getBoolean("new", true)) firstSet();
         }
     }
 
@@ -294,20 +301,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // 서버 통신
-            httpClient svr = new httpClient();
-            try {
-                String response = svr.post("http://52.79.82.56/users/logIn", svr.loginData(mEmail, mPassword));
-                if(response.equals("new")) {
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putBoolean("new", true);
-                    editor.commit();
-                    return true;
-                } else if(response.equals("password")) {
-                    return false;
-                } else {
-                    // json 처리
-                    // TODO : json 을 pref 안 거치게 하기!
-                    JSONArray jsonArray = new JSONArray(svr);
+            String response = httpClient.loginPost("http://52.79.82.56/users/logIn", mEmail, mPassword);
+            if(response.equals("fail")) {
+                return false;
+            }  else if(response.equals("new")) {
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("new", true);
+                editor.commit();
+                return true;
+            } else if(response.equals("password")) {
+                return false;
+            } else {
+                // json 처리
+                // TODO : json 을 pref 안 거치게 하기!
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = new JSONArray(response);
                     JSONObject jsonObject = new JSONObject();
                     for(int i = 0; i < jsonArray.length(); i++) {
                         jsonObject= jsonArray.getJSONObject(i);
@@ -319,11 +328,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     editor.putString("major", jsonObject.getString("major"));
                     Toast.makeText(getApplicationContext(), "email" + jsonObject.getString("email"), Toast.LENGTH_LONG).show();
                     return true;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
                 }
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
             }
-            return false;
         }
 
         @Override
