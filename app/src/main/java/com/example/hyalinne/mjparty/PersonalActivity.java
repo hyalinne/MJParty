@@ -1,12 +1,12 @@
 package com.example.hyalinne.mjparty;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PersonalActivity extends AppCompatActivity {
     private SharedPreferences pref;
@@ -39,18 +39,18 @@ public class PersonalActivity extends AppCompatActivity {
 
     public void modifyPS(View view) {
         User user = new User(pref.getString("email", null), pref.getString("passwd", null), name.getText().toString(), Integer.parseInt(age.getText().toString()), gender.getText().toString(), major.getText().toString());
+        Toast.makeText(getApplicationContext(), user.getEmail() + user.getPasswd() + user.getName() + user.getAge() + user.getGender() + user.getMajor(), Toast.LENGTH_LONG).show();
         String response = httpClient.userModifyPost("http://52.79.82.56/users/updateUser", user);
-        if(response.equals("true")) {
-            if (pref.getBoolean("new", true)) {
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("new", false);
-                editor.commit();
-                startActivity(new Intent(this, MainActivity.class));
-            } else {
-                this.onBackPressed();
-            }
-        } else {
-
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("name", user.getName());
+        editor.putInt("age", user.getAge());
+        editor.putString("gender", user.getGender());
+        editor.putString("major", user.getMajor());
+        editor.commit();
+        if (pref.getBoolean("new", true)) {
+            editor.putBoolean("new", false);
+            editor.commit();
         }
+        this.finish();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.hyalinne.mjparty;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -29,12 +30,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import static com.example.hyalinne.mjparty.R.id.map;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
     private static String TAG = "MainActivity";
 
     private GoogleMap mMap;
     Geocoder gc;
     EditText edit01;
+    private Marker marker;
 
 
     @Override
@@ -46,7 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(map);
         mapFragment.getMapAsync(this);
 
         // 지오코더 객체 생성
@@ -188,6 +192,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkDangerousPermissions();
     }
 
+    public void returnMain(View view) {
+        String nowAddress = "???";
+        if(marker == null) {
+            Toast.makeText(getApplicationContext(), "위치를 선택해주세요.", Toast.LENGTH_LONG).show();
+        } else {
+            List<Address> address;
+            LatLng location = marker.getPosition();
+            if(gc != null) {
+                try {
+                    address = gc.getFromLocation(location.latitude, location.longitude, 1);
+                    if(address != null) {
+                        String currentLocation = address.get(0).getAddressLine(0).toString();
+                        nowAddress = currentLocation;
+                    }
+                } catch (IOException e) {
+                    Toast.makeText(getApplicationContext(), "주소를 가져올 수 없습니다.", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
+        }
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("address", nowAddress);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        mMap.clear();
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+        marker =  mMap.addMarker(new MarkerOptions().position(latLng));
+    }
+
     /**
      * 리스너 정의
      */
@@ -230,7 +266,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // 현재 위치를 이용해 LatLon 객체 생성
         LatLng loc = new LatLng(latitude, longitude);
 
+        mMap.clear();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
-        Marker marker =  mMap.addMarker(new MarkerOptions().position(loc));
+        marker =  mMap.addMarker(new MarkerOptions().position(loc));
     }
 }

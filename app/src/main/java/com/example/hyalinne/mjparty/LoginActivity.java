@@ -57,8 +57,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // Preference
     private SharedPreferences pref;
 
+    private boolean isNew;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.isNew = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // UI 세팅
@@ -96,7 +99,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     // 회원가입 시 개인정보 입력
     private void firstSet() {
-        startActivity(new Intent(this, PersonalActivity.class));
+        if(isNew) {
+            startActivity(new Intent(this, PersonalActivity.class));
+        }
     }
 
     private void populateAutoComplete() {
@@ -193,7 +198,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
-            if(pref.getBoolean("new", true)) firstSet();
+            firstSet();
         }
     }
 
@@ -305,6 +310,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if(response.equals("fail")) {
                 return false;
             }  else if(response.equals("new")) {
+                isNew = true;
                 SharedPreferences.Editor editor = pref.edit();
                 editor.putBoolean("new", true);
                 editor.commit();
@@ -312,8 +318,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } else if(response.equals("password")) {
                 return false;
             } else {
-                // json 처리
-                // TODO : json 을 pref 안 거치게 하기!
+                isNew = false;
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("new", false);
+                editor.commit();
                 JSONArray jsonArray = null;
                 try {
                     jsonArray = new JSONArray(response);
@@ -321,12 +329,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     for(int i = 0; i < jsonArray.length(); i++) {
                         jsonObject= jsonArray.getJSONObject(i);
                     }
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putString("name", jsonObject.getString("name"));
-                    editor.putInt("age", jsonObject.getInt("age"));
-                    editor.putString("gender", jsonObject.getString("gender"));
-                    editor.putString("major", jsonObject.getString("major"));
-                    Toast.makeText(getApplicationContext(), "email" + jsonObject.getString("email"), Toast.LENGTH_LONG).show();
+                    if(jsonObject != null) {
+                        editor.putString("name", jsonObject.getString("name"));
+                        editor.putInt("age", jsonObject.getInt("age"));
+                        editor.putString("gender", jsonObject.getString("gender"));
+                        editor.putString("major", jsonObject.getString("major"));
+                    }
                     return true;
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity
 
     private BackPressCloseHandler backPressCloseHandler;
 
-    public final static String VIDEO_URL = "http://blogattach.naver.com/49dc55e5f1a9ad715fb3dbebd2334f3b97c43bdef2/20161207_230_blogfile/heamin0_1481041770222_Gz4855_mp4/%BD%C5%BA%F1%C7%D1+%B5%BF%B9%B0%BB%E7%C0%FC++FANTASTIC+BEASTS+AND+WHERE+TO+FIND+THEM++4%C2%F7+%B0%F8%BD%C4+%BF%B9%B0%ED%C6%ED+%28%C7%D1%B1%B9%BE%EE+CC%29.mp4?type=attachment";
+    public final static String VIDEO_URL = "http://blogattach.naver.com/49dc55e5f1a9ad715fb3dbe9d734493591c53ad4da/20161207_230_blogfile/heamin0_1481041770222_Gz4855_mp4/%BD%C5%BA%F1%C7%D1+%B5%BF%B9%B0%BB%E7%C0%FC++FANTASTIC+BEASTS+AND+WHERE+TO+FIND+THEM++4%C2%F7+%B0%F8%BD%C4+%BF%B9%B0%ED%C6%ED+%28%C7%D1%B1%B9%BE%EE+CC%29.mp4?type=attachment";
     public final static int URL = 1;
     public final static int SDCARD = 2;
     private VideoView videoView;
@@ -103,6 +104,17 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Intent intent = getIntent();
+        if(intent != null) {
+            String address = intent.getStringExtra("address");
+            TextView tv = (TextView) findViewById(R.id.currentlocation);
+            tv.setText(address);
+        }
+    }
+
     //동영상 재생 Method
     private void playVideo() {
         //비디오를 처음부터 재생할 때 0으로 시작(파라메터 sec)
@@ -170,12 +182,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_personal) {
-            Toast.makeText(getApplicationContext(), "personal", Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, PersonalActivity.class));
         } else if (id == R.id.nav_party) {
-            Toast.makeText(getApplicationContext(), "party", Toast.LENGTH_LONG).show();
         } else if (id == R.id.nav_setting) {
-            Toast.makeText(getApplicationContext(), "setting", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_logout) {
             logout();
             Toast.makeText(getApplicationContext(), "logout", Toast.LENGTH_LONG).show();
