@@ -32,7 +32,7 @@ import java.util.Locale;
 
 import static com.example.hyalinne.mjparty.R.id.map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
     private static String TAG = "MainActivity";
 
     private GoogleMap mMap;
@@ -55,6 +55,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // 지오코더 객체 생성
         gc = new Geocoder(this, Locale.KOREAN);
+
+
     }
 
     public void showAddress(View v) {
@@ -190,6 +192,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startLocationService();
 
         checkDangerousPermissions();
+
+        mMap.setOnMapLongClickListener(this);
     }
 
     public void returnMain(View view) {
@@ -218,7 +222,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapClick(LatLng latLng) {
+    public void onMapLongClick(LatLng latLng) {
         mMap.clear();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         marker =  mMap.addMarker(new MarkerOptions().position(latLng));

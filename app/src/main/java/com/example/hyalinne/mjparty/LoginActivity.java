@@ -28,11 +28,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,7 +188,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             editor.putString("email", email);
             editor.putString("passwd", password);
             editor.commit();
-            Toast.makeText(getApplicationContext(), "User " + email, Toast.LENGTH_LONG).show();
             // 프로그레스
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
@@ -322,24 +316,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 SharedPreferences.Editor editor = pref.edit();
                 editor.putBoolean("new", false);
                 editor.commit();
-                JSONArray jsonArray = null;
-                try {
-                    jsonArray = new JSONArray(response);
-                    JSONObject jsonObject = new JSONObject();
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        jsonObject= jsonArray.getJSONObject(i);
-                    }
-                    if(jsonObject != null) {
-                        editor.putString("name", jsonObject.getString("name"));
-                        editor.putInt("age", jsonObject.getInt("age"));
-                        editor.putString("gender", jsonObject.getString("gender"));
-                        editor.putString("major", jsonObject.getString("major"));
-                    }
-                    return true;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return false;
-                }
+                return true;
             }
         }
 

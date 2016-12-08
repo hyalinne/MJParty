@@ -198,8 +198,7 @@ public class MainActivity extends AppCompatActivity
 
 
     public void findParty(View view) {
-        String email = pref.getString("email", null);
-        Toast.makeText(getApplicationContext(), "User " + email, Toast.LENGTH_LONG).show();
+        startActivity(new Intent(this, ListActivity.class));
     }
 
     public void makeParty(View view) {
