@@ -184,6 +184,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_personal) {
             startActivity(new Intent(this, PersonalActivity.class));
         } else if (id == R.id.nav_party) {
+            Intent intent = new Intent(this, MyRoomActivity.class);
+            intent.putExtra("email", pref.getString("email", null));
+            startActivity(intent);
         } else if (id == R.id.nav_setting) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_logout) {

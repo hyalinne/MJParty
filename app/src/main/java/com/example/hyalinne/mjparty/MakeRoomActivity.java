@@ -1,14 +1,15 @@
 package com.example.hyalinne.mjparty;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 
 public class MakeRoomActivity extends AppCompatActivity {
+    private String[] roomInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +26,15 @@ public class MakeRoomActivity extends AppCompatActivity {
         EditText number = (EditText) findViewById(R.id.number);
 
         try {
-            final String[] roomInfo = {
+            /* TODO : roomInfo : api, name, category, party_date, max_number, place */
+            roomInfo = new String[]{
                     title.getText().toString(),
                     subject.getText().toString(),
                     time.getText().toString(),
-                    number.getText().toString() };
+                    number.getText().toString()};
             makeRoom.putExtra("roomInfo", roomInfo);
+            httpThread t = new httpThread();
+            t.start();
             startActivity(makeRoom);
             this.finish();
         } catch (Exception e) {
@@ -40,5 +44,11 @@ public class MakeRoomActivity extends AppCompatActivity {
 
     public void makeCancel(View view) {
         this.finish();
+    }
+
+    private class httpThread extends Thread {
+        public void run() {
+            PartyHttp.newParty("http://52.79.82.56/partys/new", roomInfo);
+        }
     }
 }

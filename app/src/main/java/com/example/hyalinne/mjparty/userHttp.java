@@ -15,7 +15,7 @@ import java.util.Scanner;
  * Created by hyalinne on 2016-12-05.
  */
 
-public class httpClient {
+public class UserHttp {
     public static String loginPost(String url, String email, String passwd){
         InputStream is = null;
         String result = "";

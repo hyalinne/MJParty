@@ -41,7 +41,7 @@ public class PersonalActivity extends AppCompatActivity {
 
     private class httpThread1 extends Thread {
         public void run() {
-            String response = httpClient.getUser("http://52.79.82.56/users/getUser", email_txt);
+            String response = UserHttp.getUser("http://52.79.82.56/users/getUser", email_txt);
             try {
                 JSONArray jsoneArray = new JSONArray(response);
                 JSONObject jsonObject = jsoneArray.getJSONObject(0);
@@ -68,7 +68,7 @@ public class PersonalActivity extends AppCompatActivity {
 
     private class httpThread2 extends Thread {
         public void run() {
-            String response = httpClient.userModifyPost("http://52.79.82.56/users/updateUser", email_txt, pref.getString("passwd", null), name.getText().toString(), Integer.parseInt(age.getText().toString()), gender.getText().toString(), major.getText().toString());
+            String response = UserHttp.userModifyPost("http://52.79.82.56/users/updateUser", email_txt, pref.getString("passwd", null), name.getText().toString(), Integer.parseInt(age.getText().toString()), gender.getText().toString(), major.getText().toString());
         }
     }
 }

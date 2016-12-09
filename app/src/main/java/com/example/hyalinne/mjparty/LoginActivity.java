@@ -300,7 +300,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // 서버 통신
-            String response = httpClient.loginPost("http://52.79.82.56/users/logIn", mEmail, mPassword);
+            String response = UserHttp.loginPost("http://52.79.82.56/users/logIn", mEmail, mPassword);
             if(response.equals("fail")) {
                 return false;
             }  else if(response.equals("new")) {
